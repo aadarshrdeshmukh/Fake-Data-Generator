@@ -3,14 +3,22 @@ from tkinter import messagebox, ttk, filedialog
 import json
 import random
 from faker import Faker
+from ttkthemes import ThemedTk
+from PIL import Image, ImageTk
 
 # Initialize Faker with multiple locales for variety
 fake = Faker(['en_US', 'en_GB', 'en_IN'])
 
-# Create the main application window
-root = tk.Tk()
+# Create the main application window with a theme
+root = ThemedTk(theme="arc")
 root.title("✨ Fancy Fake Data Generator")
 root.geometry("600x700")
+
+# Load background image
+bg_image = Image.open("/Users/adarsh/Desktop/Fake Data/download.jpeg")  # Ensure this path is correct
+bg_photo = ImageTk.PhotoImage(bg_image)
+bg_label = tk.Label(root, image=bg_photo)
+bg_label.place(relwidth=1, relheight=1)
 
 # Theme settings
 themes = {
@@ -34,7 +42,6 @@ current_theme = "Tech Blue"
 # Fun name prefixes and suffixes for "Surprise Me!"
 fun_prefixes = ["Super", "Mega", "Ultra", "Quantum", "Cosmic"]
 fun_suffixes = ["Master", "Ninja", "Guru", "Wizard", "Champion"]
-
 
 def apply_theme():
     """Apply the selected theme to all elements properly."""
@@ -64,14 +71,12 @@ def apply_theme():
     # Apply the theme to the combobox
     theme_selector.config(style="TCombobox")
 
-
 def generate_fun_name():
     """Generate a fun fake name."""
     prefix = random.choice(fun_prefixes)
     base_name = fake.name()
     suffix = random.choice(fun_suffixes)
     return f"{prefix} {base_name} the {suffix}"
-
 
 def generate_fake_data():
     """Generate normal fake data with a matching email."""
@@ -86,8 +91,6 @@ def generate_fake_data():
 
     result_var.set(f"👤 Name: {actual_name}\n📧 Email: {email}\n📍 Address: {address}\n📱 Phone: {phone}")
 
-
-
 def generate_surprise_data():
     """Generate 'Surprise Me!' fake data with an email based on the actual name."""
     actual_name = fake.name()
@@ -101,14 +104,12 @@ def generate_surprise_data():
 
     result_var.set(f"🌟 Special Name: {fun_name}\n📧 Email: {email}\n📍 Address: {address}\n🔹 Actual Name: {actual_name}")
 
-
 def copy_to_clipboard(event=None):
     """Copy displayed data to clipboard when clicked."""
     root.clipboard_clear()
     root.clipboard_append(result_var.get())
     root.update()
     messagebox.showinfo("✨ Copied!", "Data magically copied to clipboard!")
-
 
 def export_json():
     """Export 10 fake data records to JSON."""
@@ -125,13 +126,11 @@ def export_json():
             json.dump(data, f, indent=4)
         messagebox.showinfo("🎉 Success!", "Fake data exported successfully!")
 
-
 def change_theme(choice):
     """Change theme dynamically."""
     global current_theme
     current_theme = choice
     apply_theme()
-
 
 # UI Components
 title_label = tk.Label(root, text="✨ Fancy Fake Data Generator", font=("Arial", 16, "bold"))
@@ -174,6 +173,11 @@ theme_selector = ttk.Combobox(theme_frame, values=list(themes.keys()), state="re
 theme_selector.set(current_theme)
 theme_selector.bind("<<ComboboxSelected>>", lambda event: change_theme(theme_selector.get()))
 theme_selector.pack(side=tk.LEFT, padx=5)
+
+# Status bar
+status_var = tk.StringVar()
+status_bar = tk.Label(root, textvariable=status_var, bd=1, relief=tk.SUNKEN, anchor=tk.W)
+status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Apply initial theme
 apply_theme()
